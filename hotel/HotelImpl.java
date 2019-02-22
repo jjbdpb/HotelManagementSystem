@@ -1,11 +1,79 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
+import java.util.Calendar;
 package hotel; // means this class belongs to the hotel package
 public class HotelImpl implements Hotel {
 	public void HotelImple(String roomsTxtFileName, String guestsTxtFileName,
 	String bookingsTxtFileName, String paymentsTxtFileName){
+		importAllData(roomsTxtFileName, guestsTxtFileName, bookingsTxtFileName, paymentsTxtFileName)
 	}
+
+
+	public boolean addRoom(long roomNumber, String roomType, double roomPrice, int capacity, String facilities){
+		for(Room room : roomList) {
+            if room.getRoomNumber() == roomNumber return false;
+        }
+        Room room = new Room();
+        room.roomNumber = roomNumber;
+        room.roomType = roomType;
+        room.roomPrice = roomPrice;
+        room.capacity = capacity;
+        room.facilities = facilities;
+
+        roomList.add(room);
+        return true;
+	}
+
+    public boolean removeRoom(int room_id) {
+        for (Booking book : bookingList ) {
+            Date d1 = new Date();
+            if (book.roomNumber == room_id && d1.after(book.getCheckOutDate())) {
+                bookingList.remove(book);
+                return true;
+            }
+        }
+        return false;
+    }
+	public boolean addGuest(String fName, String lName, boolean vipState){
+		boolean unique = true;
+		while(true){
+			long guestID = new Random().nextLong();
+			for(Guest guest: guestList){
+				if guest.getGuestID() == guestID unique = false;
+			}
+		if(unique == true){break;}
+		}
+
+		Guest guest = new Guest();
+		guest.guestID = guestID;
+		guest.fName = fName;
+		guest.lName = lName;
+		guest.dateJoin = new Date(); 
+		if(vipState==true){
+			Calendar end_Date = Calendar.getInstance();
+			end_Date.setTime(new Date());
+			end_Date.add(Calendar.YEAR,1);
+			String formated = ft.format(end_Date);
+			guest.vipState.VIPStatus = true;
+			guest.vipState.VIPstartDate = new Date();
+			guest.vipState.VIPexpiryDate = ft.parse(formated);
+		}
+	}
+	public boolean importAllData(String roomsTxtFileName, String guestsTxtFileName, String bookingsTxtFileName, String paymentsTxtFileName){
+		try{
+			importRoomsData(roomsTxtFileName);
+			importGuestsData(guestsTxtFileName);
+			importBookingsData(bookingsTxtFileName);
+			importPaymentsData(paymentsTxtFileName);
+		}catch(Exception e){
+			System.out.println("ERROR: an issue occured importing data")
+			return false;
+		}
+		return true;
+	}
+
 	public boolean importRoomsData(String roomsTxtFileName)
 	{
 		try
@@ -50,11 +118,13 @@ public class HotelImpl implements Hotel {
 	            guest.lName = guest_info[2];
 	            guest.dateJoin = ft.parse(guest_info[3]);
 	            try {
-	                guest.VIPstartDate = ft.parse(guest_info[4]);
-	                guest.VIPexpiryDate = ft.parse(guest_info[5]);
+	                guest.VIPState.VIPstartDate = ft.parse(guest_info[4]);
+	                guest.VIPState.VIPexpiryDate = ft.parse(guest_info[5]);
+	                guest.VIPState.VIPStatus = true;
 	            } catch (ArrayIndexOutOfBoundsException exception) {
-	                guest.VIPstartDate = null;
-	                guest.VIPexpiryDate = null;
+	                guest.VIPState.VIPstartDate = null;
+	                guest.VIPState.VIPexpiryDate = null;
+	            	guest.VIPState.VIPStatus = false;
 	            }
 	            guestList.add(guest);
 	        }
@@ -119,8 +189,9 @@ public class HotelImpl implements Hotel {
 		return true;
 	}
 	public void displayAllRooms(){ }
-	public boolean savePaymentsData(String paymentsTxtFileName){return
-	true;}
+	public boolean savePaymentsData(String paymentsTxtFileName){
+		return true;
+	}
 	
 
 	static class Room {
@@ -160,8 +231,12 @@ public class HotelImpl implements Hotel {
         private String fName;
         private String lName;
         private Date dateJoin;
-        private Date VIPstartDate;
-        private Date VIPexpiryDate;
+
+       	protected static class VIPState {
+        	private boolean VIPStatus;
+        	private Date VIPstartDate;
+        	private Date VIPexpiryDate;
+        }
 
         public long getGuestID() {return this.guestID;}
         public String getfName() {return this.fName;}
