@@ -328,6 +328,13 @@ public class HotelImpl implements Hotel {
         private int capacity;
         private String facilities;
 
+        public Room(long roomNumber, String roomType, double roomPrice, String facilities) {
+            this.roomNumber = roomNumber;
+            this.roomType = roomType;
+            this.roomPrice = roomPrice;
+            this.facilities = facilities;
+        }
+
         public long getRoomNumber() {return this.roomNumber;}
         public String getRoomType(){return this.roomType;}
         public double getRoomPrice(){return this.roomPrice;}
@@ -343,6 +350,15 @@ public class HotelImpl implements Hotel {
         private Date checkInDate;
         private Date checkOutDate;
         private double totalAmount;
+
+        public Booking(long bookingID, long guestID, long roomNumber, Date bookingDate, Date checkInDate, Date checkOutDate) {
+            this.bookingID = bookingID;
+            this.guestID = guestID;
+            this.roomNumber = roomNumber;
+            this.bookingDate = bookingDate;
+            this.checkInDate = checkInDate;
+            this.checkOutDate;
+        }
 
         public long getBookingID(){return this.bookingID;}
         public long getGuestID(){return this.guestID;}
@@ -397,6 +413,13 @@ public class HotelImpl implements Hotel {
         private long guestID;
         private double amount;
         private String payReason;
+
+        public Payment(Date date, long guestID, double amount, String payReason) {
+            this.date = date;
+            this.guestID = guestID;
+            this.amount = amount;
+            this.payReason = payReason;
+        }
 
         public Date getDate() {return this.date;}
         public long getGuestID() {return this.guestID;}
