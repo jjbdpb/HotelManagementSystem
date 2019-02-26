@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 import java.util.Calendar;
+import java.text.*;
 
 // Means this class has to implement all the hotel's interface methods to compile successfully.
 public class HotelImpl implements Hotel {
@@ -95,6 +96,16 @@ public class HotelImpl implements Hotel {
     }
 
     public boolean makeBooking(String roomType, long guestID, Date checkInDate, Date checkOutDate){
+
+    	boolean guestExists = false;
+    	for(Guest guest: guestList){
+    		if(guest.getGuestID() == guestID){guestExists = true;}}
+    	if(guestExists == false){return false;}
+
+
+    	if(new Date().after(checkInDate)){return false;}
+
+
     	availableRooms = findAvailableRooms(roomType, checkInDate, checkOutDate);
     	try{
     		roomNumber = availableRooms.get(new Random().nextInt(availableRooms.size()));
@@ -127,7 +138,21 @@ public class HotelImpl implements Hotel {
         long diff = checkOutDate.getTime() - checkInDate.getTime();
         long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
         booking.totalAmount = daysDiff*bookedRoom.getRoomPrice();
+        for(VIPguest guest : VIPGuestList){
+        	if(guest.getGuestID() == guestID && checkOutDate.before(guest.getVIPexpiryDate())){
+        		boooking.totalAmount = booking.totalAmount*0.9;
+        	}
+        }
+
+        Payment payment = new Payment();
+        payment.date = new Date();
+        payment.guestID = guestID;
+        payment.ammount = booking.totalAmount;
+        pament.payReason = 'booking';
+
+        paymentList.add(payment);
         bookingList.add(booking);
+        return true;
 
     }
     public boolean importAllData(String roomsTxtFileName, String guestsTxtFileName, String bookingsTxtFileName, String paymentsTxtFileName){
@@ -257,6 +282,19 @@ public class HotelImpl implements Hotel {
         return true;
     }
 
+
+    public boolean checkOut(long bookingID){
+    	for(Booking book: bookingList){
+    		if(book.getBookingID()==bookingID){booking=book;}
+    	}
+
+    	if(new Date().after(booking.getCheckOutDate())|| new Date().before(checkInDate)){return false;}
+
+    	bookingList.remove(booking);
+    	return true;
+    }
+
+    
     public void displayAllGuests() {}
 
     public void displayAllRooms(){ }
