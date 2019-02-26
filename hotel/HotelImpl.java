@@ -44,6 +44,10 @@ public class HotelImpl implements Hotel {
 	            String formated = ft.format(end_Date);
 	            Date end_Date = ft.parse(formated);
 			    vipGuest.VIPGuest(getGuestID, fName, lName, new Date(), new Date(), end_Date);
+			    Payment payment = new Payment();
+			    payment.Payment(new Date(), vipGuest.getGuestID(). 50.00, 'VIPmembership');
+
+			    paymentList.add(payment);
 			    vipGuestList.add(vipGuest);
 	        }else{
 		        while(true){
@@ -148,15 +152,12 @@ public class HotelImpl implements Hotel {
 
 
         Booking booking = new Booking();
-        booking.bookingID = bookingID;
-        booking.guestID = guestID;
-        booking.roomNumber = roomNumber;
-        booking.bookingDate = new Date();
-        booking.checkInDate = checkInDate;
-        booking.checkOutDate = checkOutDate;
         long diff = checkOutDate.getTime() - checkInDate.getTime();
         long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-        booking.totalAmount = daysDiff*bookedRoom.getRoomPrice();
+        totalAmount = daysDiff*bookedRoom.getRoomPrice();
+        
+        booking.Booking(bookingID, guestId, roomNumber, new Date(), checkInDate, checkOutDate, totalAmount);
+
         for(VIPguest guest : VIPGuestList){
         	if(guest.getGuestID() == guestID && checkOutDate.before(guest.getVIPexpiryDate())){
         		boooking.totalAmount = booking.totalAmount*0.9;
@@ -164,10 +165,7 @@ public class HotelImpl implements Hotel {
         }
 
         Payment payment = new Payment();
-        payment.date = new Date();
-        payment.guestID = guestID;
-        payment.ammount = booking.totalAmount;
-        pament.payReason = 'booking';
+        payment.Payment(new Date(), guestID, totalAmount, "booking");
 
         paymentList.add(payment);
         bookingList.add(booking);
@@ -277,10 +275,8 @@ public class HotelImpl implements Hotel {
             while ((st = .readLine()) != null){
                 String[] payment_info = st.split(",");
                 Payment payment = new Payment();
-                payment.date = ft.parse(payment_info[0]);
-                payment.guestID = Long.valueOf(payment_info[1]);
-                payment.amount= Double.valueOf(payment_info[2]);
-                payment.payReason = String.valueOf(payment_info[3]);
+                payment.Payment(ft.parse(payment_info[0]), Long.valueOf(payment_info[1]),
+                	Double.valueOf(payment_info[2]), payment_info[3]);
                 paymentList.add(payment);
             }
         }catch(Exception e){
@@ -304,22 +300,91 @@ public class HotelImpl implements Hotel {
     	return true;
     }
 
+    public boolean cancelBooking(long bookingID){
+    	try{
+	    	for(Booking book : bookingList){
+	    		if(book.getBookingID() == bookingID){booking = book;}
+	    	}
+	    	
+	    	long diff = new Date().getTime() - long diff = checkOutDate.getTime() - checkInDate.getTime();
+	        long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);;
+	        long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+	    	if(daysDiff>2){
+	    		Payment refund = new Payment();
+	    		Payment.Payment(new Date(), booking.getGuestID(), booking.getTotalAmount()*(-1), 'refund');
+	    		paymentList.add(payment);
+	    	}
+	    	bookingList.remove(booking);
+	    	return true;
+	    }catch(Exception e){
+	    	System.out.print("An error occured while canceling a booking....")
+	    	System.out.print(e + '\n')
+	    	return false;
+	    }
+    }
 
-    public void displayAllGuests() {}
 
-    public void displayAllRooms(){ }
+
+    public void displayBookingsOnDate(Date date){
+    	for(Booking book: bookingList){
+    		if(book.getCheckOutDate().before(date) && book.getCheckInDate().after(date)){
+    			Guest guest = searchGuestByID(book.getGuestID());
+    			for(Room room: roomList){
+    				if(room.getRoomNumber()==book.getRoomNumber()){booked_room = room;}
+    			}
+    			System.out.print("bookingID: " + book.getBookingID() + "Name: " + guest.getlName() +' ' + guest.getfName() + "Room Number" + book.getRoomNumber() + "Room Type: " + booked_room.getRoomType() + "Room Price: " + booked_room.getRoomPrice() + "Payment Price: " + book.getTotalAmount() +'\n');
+
+    		}
+    	}
+    }
+
+    public void displayPaymentsOnDate(Date date){
+    	for(Payment payment: paymentList){
+    		if(payment.getDate() == date){
+    			System.out.print("Guest ID: "+ payment.getGuestID() + "Payment Ammount: " +payment.getAmount() + "Payment Reason:" + payment.getPayReason());
+
+    		}
+    	}
+    }
+    public void displayAllGuests(){
+    	System.out.println('Displaying Guests: ');
+    	for(Guest guest: guestList){
+    		System.out.print("Guest ID: "+ guest.getGuestID() + "Guest Name: "+ guest.getlName() + ' ' guest.getfName() + "Date Joined: " + guest.getDateJoin() +'\n');
+    	}
+    	System.out.println('Displaying VIP Guests: ');
+    	for(VIPGuest guest: vipGuestList){
+			System.out.print("Guest ID: "+ guest.getGuestID() + "Guest Name: "+ guest.getlName() + ' ' guest.getfName() + "Date Joined: " + guest.getDateJoin() + "VIP Start Date: " + guest.getVIPStartDate() + "VIP End Date: " + guest.getVIPExpiryDate() +'\n')
+    	}
+    }
+
+    public void displayAllRooms(){
+    	System.out.println('Displaing Rooms: ');
+    	for(Room room: roomList){
+    		System.out.print("Room Number: " +room.getRoomNumber() + "Room Type: " + room.getRoomType() + "Room Price: " + room.getRoomPrice() + "Room Capacity: " + room.getCapacity() + "Facilities: " +room.getFacilities() +'\n');
+    	}
+    }
 
     public boolean savePaymentsData(String paymentsTxtFileName){
         return true;
     }
 
-    public void displayAllBookings() {}
+    public void displayAllBookings(){
+    	System.out.println('Displaying Bookings: ');
+    	for(Booking book: BookingList){
+    	    Guest guest = searchGuestByID(book.getGuestID());
+    		for(Room room: roomList){
+    			if(room.getRoomNumber()==book.getRoomNumber()){booked_room = room;}}
+    		System.out.print("bookingID: " + book.getBookingID() + "Name: " + guest.getlName() +' ' + guest.getfName() + "Room Number" + book.getRoomNumber() + "Room Type: " + booked_room.getRoomType() + "Room Price: " + booked_room.getRoomPrice() + "Payment Price: " + book.getTotalAmount() +'\n');	
+    	}
+    }
 
-    public void displayAllPayments() {}
+    public void displayAllPayments(){
+    	System.out.println('Displaying Payments: ');
+    	for(Payment payment: paymentList){
+    		System.out.print("Guest ID: "+ payment.getGuestID() + "Payment Ammount: " +payment.getAmount() + "Payment Reason:" + payment.getPayReason());
 
-
-
-
+    	}
+    }
 
     static class Room {
         private long roomNumber;
@@ -351,13 +416,14 @@ public class HotelImpl implements Hotel {
         private Date checkOutDate;
         private double totalAmount;
 
-        public Booking(long bookingID, long guestID, long roomNumber, Date bookingDate, Date checkInDate, Date checkOutDate) {
+        public Booking(long bookingID, long guestID, long roomNumber, Date bookingDate, Date checkInDate, Date checkOutDate, double totalAmount) {
             this.bookingID = bookingID;
             this.guestID = guestID;
             this.roomNumber = roomNumber;
             this.bookingDate = bookingDate;
             this.checkInDate = checkInDate;
-            this.checkOutDate;
+            this.checkOutDate = checkOutDate;
+            this.totalAmount = totalAmount;
         }
 
         public long getBookingID(){return this.bookingID;}
