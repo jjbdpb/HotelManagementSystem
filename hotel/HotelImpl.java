@@ -87,14 +87,10 @@ public class HotelImpl implements Hotel {
     }
     public boolean addRoom(long roomNumber, String roomType, double roomPrice, int capacity, String facilities){
         for(Room room : roomList) {
-            if (room.getRoomNumber() == roomNumber) return false;
+            if(room.getRoomNumber() == roomNumber){return false;}
         }
         Room room = new Room();
-        room.roomNumber = roomNumber;
-        room.roomType = roomType;
-        room.roomPrice = roomPrice;
-        room.capacity = capacity;
-        room.facilities = facilities;
+        room.Room(roomNumber, roomType, roomPrice, capacity, facilities);
         roomList.add(room);
         return true;
     }
@@ -203,11 +199,7 @@ public class HotelImpl implements Hotel {
             {
                 String[] room_info = st.split(",");
                 Room room = new Room();
-                room.roomNumber = Long.valueOf(room_info[0]);
-                room.roomType = room_info[1];
-                room.roomPrice = Double.valueOf(room_info[2]);
-                room.capacity = Integer.valueOf(room_info[3]);
-                room.facilities = room_info[4];
+                room.Room(Long.valueOf(room_info[0]), room_info[1], Double.valueOf(room_info[2]), Integer.valueOf(room_info[3]), room_info[4]);
                 roomList.add(room);
             }
             file.close();
@@ -259,13 +251,11 @@ public class HotelImpl implements Hotel {
             while ((st = br.readLine()) != null) {
                 String[] booking_info = st.split(",");
                 Booking booking = new Booking();
-                booking.bookingID = Long.valueOf(booking_info[0]);
-                booking.guestID = Long.valueOf(booking_info[1]);
-                booking.roomNumber = Long.valueOf(booking_info[2]);
-                booking.bookingDate = ft.parse(booking_info[3]);
-                booking.checkInDate = ft.parse(booking_info[4]);
-                booking.checkOutDate = ft.parse(booking_info[5]);
-                booking.totalAmount = Double.valueOf(booking_info[6]);
+
+                booking.Booking(Long.valueOf(booking_info[0]), Long.valueOf(booking_info[1]),
+                	Long.valueOf(booking_info[2]),ft.parse(booking_info[3]),
+                	ft.parse(booking_info[4]), ft.parse(booking_info[5]),
+                	Double.valueOf(room_info[6]));
                 bookingList.add(booking);
             }
         }
