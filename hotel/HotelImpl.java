@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Random;
 import java.util.Calendar;
 import java.text.*;
+import java.Writer.*;
 
 // Means this class has to implement all the hotel's interface methods to compile successfully.
 public class HotelImpl implements Hotel {
@@ -163,7 +164,7 @@ public class HotelImpl implements Hotel {
         booking.totalAmount = daysDiff*bookedRoom.getRoomPrice();
         for(VIPguest guest : VIPGuestList){
         	if(guest.getGuestID() == guestID && checkOutDate.before(guest.getVIPexpiryDate())){
-        		boooking.totalAmount = booking.totalAmount*0.9;
+        		boooking.totalAmount = booking.totalAmount * 0.9;
         	}
         }
 
@@ -226,8 +227,8 @@ public class HotelImpl implements Hotel {
             File file = new File(guestsTxtFileName)
             BufferedReader br = new BufferedReader(new FileReader(file));
             String st;
-            ArrayList<Guest> guestList = new ArrayList<Guest>();
-            ArrayList<VIPGuest> vipGuestList = new ArrayList<VIPGuest>();
+            public ArrayList<Guest> guestList = new ArrayList<Guest>();
+            public ArrayList<VIPGuest> vipGuestList = new ArrayList<VIPGuest>();
             while ((st = br.readLine()) != null) {
                 String[] guest_info = st.split(",");
                 if(guest_info.length > 4){
@@ -255,7 +256,7 @@ public class HotelImpl implements Hotel {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String st;
             SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
-            ArrayList<Booking> bookingList = new ArrayList<Booking>();
+            public ArrayList<Booking> bookingList = new ArrayList<Booking>();
             while ((st = br.readLine()) != null) {
                 String[] booking_info = st.split(",");
                 Booking booking = new Booking();
@@ -283,7 +284,7 @@ public class HotelImpl implements Hotel {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String st;
             SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
-            ArrayList<Payment> PaymentList = new ArrayList<Payment>();
+            public ArrayList<Payment> PaymentList = new ArrayList<Payment>();
             while ((st = .readLine()) != null){
                 String[] payment_info = st.split(",");
                 Payment payment = new Payment();
@@ -314,8 +315,96 @@ public class HotelImpl implements Hotel {
     	return true;
     }
 
+    public int [] searchGuest(String firstName, String lastName) {
+        int [] result;
+        for(Guest guest : guestList) {
+            if (guest.getfName == firstName && guest.getlName == lastName) {
+                result.add(guest.getGuestID());
+            }
+        }
+        for(VIPGuest guest : vipGuestList) {
+            if(guest.getfName() == firstName && guest.getlName() == lastName) {
+                result.add(guest.getGuestID());
+            }
+        }
+        return result;
+    }
 
-    public void displayAllGuests() {}
+    public Guest searchGuestByID(long guestID) {
+        for(Guest guest : guestList) {
+            if(guest.getGuestID() == guestID) {
+                return guest;
+            }
+        }
+        for(VIPGuest guest : vipGuestList) {
+            if(guest.getGuestID() == guestID) {
+                return guest;
+            }
+        }
+    }
+
+    public boolean saveRoomsData(String roomsTxtFileName) {
+        File fnew = new File(roomsTxtFileName + ".txt");
+        String source = textArea.getText();
+        try {
+            FileWriter roomsTxtFileName = new FileWriter(fnew, false);
+            roomsTxtFileName.write(source);
+            roomsTxtFileName.close();
+            return true;
+        }
+        return false;
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean saveGuestsData(String guestsTxtFileName) {
+        File fnew = new File(guestsTxtFileName + ".txt");
+        String source = textArea.getText();
+        try {
+            FileWriter guestsTxtFileName = new FileWriter(fnew, false);
+            guestsTxtFileName.write(source);
+            guestsTxtFileName.close();
+            return true;
+        }
+        return false;
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean saveBookingsData(String bookingsTxtFileName) {
+        File fnew = new File(bookingsTxtFileName + ".txt");
+        String source = textArea.getText();
+        try {
+            FileWriter bookingsTxtFileName = new FileWriter(fnew, false);
+            bookingsTxtFileName.write(source);
+            bookingsTxtFileName.close();
+            return true;
+        }
+        return false;
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean savePaymentsData(String paymentsTxtFileName) {
+        File fnew = new File(paymentsTxtFileName + ".txt");
+        String source = textArea.getText();
+        try {
+            FileWriter paymentsTxtFileName = new FileWriter(fnew, false);
+            paymentsTxtFileName.write(source);
+            paymentsTxtFileName.close();
+            return true;
+        }
+        return false;
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void displayAllGuests() {
+    }
 
     public void displayAllRooms(){ }
 
