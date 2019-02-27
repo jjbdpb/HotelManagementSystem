@@ -116,7 +116,7 @@ public class HotelImpl implements Hotel {
      * from the list and the function will return false as clarified below:
      *
      * @param guestID   Long integer representing the guest ID number
-     * @return             true if the guest was successfully removed or false if it was not
+     * @return          Boolean type parameter that is true if the guest was successfully removed or false if it was not
      */
 
     public boolean removeGuest(long guestID) {
@@ -143,6 +143,16 @@ public class HotelImpl implements Hotel {
 	    	return false;
     	}
 
+        /**
+         * Adds a room in the hotel with certain characteristics
+         *
+         * @param roomNumber   Long integer representing the romm ID number
+         * @param roomType     String representing the room type
+         * @param roomPrice    Double representing the room price
+         * @param capacity     Integer representing the capacity
+         * @param facilities   String representing the facilities needed
+         * @return             boolean type parameter that is true if the room was successfully added or false if it was not
+         */
 
     }
     public boolean addRoom(long roomNumber, String roomType, double roomPrice, int capacity, String facilities){
@@ -150,13 +160,23 @@ public class HotelImpl implements Hotel {
             if(room.getRoomNumber() == roomNumber){return false;}
         }
         Room room = new Room();
-        room.Room(roomNumber, roomType, roomPrice, capacity, facilities);
+        room.Room(roomNumber, roomType, roomPrice, capacity, facilities); // Adds a rooms using the constructor of Room defined in the Room class.
         roomList.add(room);
         return true;
     }
 
+    /**
+     * This method checks if the room is available or not, and it returns a boolean type value corresponding to the success of the operation
+     *
+     * @param roomNumber   Long integer representing the romm ID number
+     * @param checkInDate  Date object representing the date when the guest checks in
+     * @param checkOutDate Date object representing the date when the guest checks out
+     * @return             boolean type parameter that is true if the room was successfully checked available or false if it was not
+     */
+
     public boolean checkRoomAvailable(long roomNumber, Date checkInDate, Date checkOutDate){
     	for (Booking book : bookingList){
+    	    // The following line checks if room ID number and if the checkin date is before the guest's check-out date and the booking info is correct in time
     		if(book.getRoomNumber() == roomNumber && checkInDate.before(book.getCheckOutDate()) && checkInDate.after(book.getCheckInDate())){
     			return false;
     		}
@@ -164,14 +184,28 @@ public class HotelImpl implements Hotel {
     	return true;
     }
 
+    /**
+     * This method returns an array of available rooms
+     *
+     * @param roomNumber   Long integer representing the romm ID number
+     * @param checkInDate  Date object representing the date when the guest checks in
+     * @param checkOutDate Date object representing the date when the guest checks out
+     * @return             This method returns an array of available rooms
+     */
+
     public ArrayList findAvailableRooms(String roomType, Date checkInDate, Date checkOutDate){
     	ArrayList<Long> availableRooms = new ArrayList<Long>();
     	for(Room room: roomList){
-    		if( room.getRoomType() == roomType && checkRoomAvailable(room.getRoomNumber(), checkInDate, checkOutDate)){
+    		if( room.getRoomType() == roomType && checkRoomAvailable(room.getRoomNumber(), checkInDate, checkOutDate)){ //Checks the room type as well as the availability between the check in dates and check out dates
     			availableRooms.add(room.getRoomNumber());
     		}
     	}
-    	return availableRooms;
+    	if (availableRooms.length == 0) {
+    	    System.out.println("There are no available rooms!");
+    	    return availableRooms;
+        } else {
+            return availableRooms; // returns an array with all the room numbers that are avilable,
+        }
     }
 
     public boolean makeBooking(String roomType, long guestID, Date checkInDate, Date checkOutDate){
