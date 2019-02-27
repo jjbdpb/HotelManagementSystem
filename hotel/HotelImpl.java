@@ -84,12 +84,12 @@ public class HotelImpl implements Hotel {
 	            String formated = ft.format(end_Date);
 	            Date end_Date = ft.parse(formated);
 			    vipGuest.VIPGuest(getGuestID, fName, lName, new Date(), new Date(), end_Date);
-			    Payment payment = new Payment();
-			    payment.Payment(new Date(), vipGuest.getGuestID(). 50.00, 'VIPmembership');
+			    Payment payment = new Payment(); // Here we create a new Payment object
+			    payment.Payment(new Date(), vipGuest.getGuestID(). 50.00, 'VIPmembership'); // And here we initilize the object using the defined constructor
 
 			    paymentList.add(payment);
 			    vipGuestList.add(vipGuest);
-	        }else{
+	        }else{ // Else if the guest is not VIP
 		        while(true){
 		            long guestID = new Random().nextLong();
 		            for(Guest guest: guestList){
@@ -110,24 +110,40 @@ public class HotelImpl implements Hotel {
         return true;
        }
 
+    /**
+     * Removes a guest from the hotel, regardless if they are VIP or not. We first have to make sure that
+     * the said guest does not have any future bookings at the time of the removal. If so, it will not be deleted
+     * from the list and the function will return false as clarified below:
+     *
+     * @param guestID   Long integer representing the guest ID number
+     * @return             true if the guest was successfully removed or false if it was not
+     */
+
     public boolean removeGuest(long guestID) {
     	try{
     		for(Booking book: bookingList){
-    			if(book.getGuestID() == guestID && new Date().after(book.getCheckOutDate())){
+    			if(book.getGuestID() == guestID && new Date().after(book.getCheckOutDate())){ // Checks the guest ID and then the corresponding date of future bookings
 		    		for(Guest guest : guestList){
 		    			if(guest.getGuestID == guestID){
-		    				guestList.remove(guest);
+		    				guestList.remove(guest); // This is where the regular guest is removed from the list.
 		    			}
 		    		}
+		    		for(Guest guest : vipGuestList) {
+		    		    if (guest.getGuestID() == guestID) {
+		    		        vipGuestList.remove(guest); // This is where the VIP guest is removed from the list.
+                        }
+                    }
     				return true;
     			}
     		}return false;
 
-    	}catch(Exception e){
+    	}catch(Exception e){ //If there is an error, we print it out to notify our client that an error has occurred
     		System.out.print("An Error Has Occured... ");
 	    	System.out.print(e + "\n");
 	    	return false;
     	}
+
+
     }
     public boolean addRoom(long roomNumber, String roomType, double roomPrice, int capacity, String facilities){
         for(Room room : roomList) {
