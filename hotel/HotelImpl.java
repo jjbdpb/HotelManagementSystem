@@ -208,19 +208,29 @@ public class HotelImpl implements Hotel {
         }
     }
 
+    /**
+     * This method makes a booking
+     *
+     * @param roomType     String representing the romm type
+     * @param guestID      Long integer representing the ID of the guest
+     * @param checkOutDate Date object representing the date when the guest checks in
+     * @param checkOutDate Date object representing the date when the guest checks out
+     * @return             This method returns a boolean-type true if the booking was successful or false if not
+     */
+
     public boolean makeBooking(String roomType, long guestID, Date checkInDate, Date checkOutDate){
 
     	boolean guestExists = false;
     	for(Guest guest: guestList){
-    		if(guest.getGuestID() == guestID){guestExists = true;}}
+    		if(guest.getGuestID() == guestID){guestExists = true;}} // This checks if the user exists
     	if(guestExists == false){return false;}
 
 
-    	if(new Date().after(checkInDate)){return false;}
+    	if(new Date().after(checkInDate)){return false;} // This checks if the check in date is before today
 
 
     	availableRooms = findAvailableRooms(roomType, checkInDate, checkOutDate);
-    	try{
+    	try{ // With a try and catch we can catch an error if there is any
     		roomNumber = availableRooms.get(new Random().nextInt(availableRooms.size()));
     	}catch(Exception e){
     		System.out.println("Error occured while making a booking");
@@ -241,12 +251,12 @@ public class HotelImpl implements Hotel {
         }
 
 
-        Booking booking = new Booking();
+        Booking booking = new Booking(); // We create a new object Booking
         long diff = checkOutDate.getTime() - checkInDate.getTime();
         long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
         totalAmount = daysDiff*bookedRoom.getRoomPrice();
         
-        booking.Booking(bookingID, guestId, roomNumber, new Date(), checkInDate, checkOutDate, totalAmount);
+        booking.Booking(bookingID, guestId, roomNumber, new Date(), checkInDate, checkOutDate, totalAmount); // We initialize it using a constructor from the class method at the bottom
 
         for(VIPguest guest : VIPGuestList){
         	if(guest.getGuestID() == guestID && checkOutDate.before(guest.getVIPexpiryDate())){
@@ -259,9 +269,20 @@ public class HotelImpl implements Hotel {
 
         paymentList.add(payment);
         bookingList.add(booking);
-        return true;
+        return true; // Returns a boolean
 
     }
+
+    /**
+     * This method imports all data
+     *
+     * @param roomsTxtFileName   the rooms txt file
+     * @param guestsTxtFileName     the guests txt file
+     * @param bookingsTxtFileName        the bookings txt file
+     * @param paymentsTxtFileName     the payments txt file
+     * @return             This method returns a boolean-type true if the data import process was successful, false if not
+     */
+
     public boolean importAllData(String roomsTxtFileName, String guestsTxtFileName, String bookingsTxtFileName, String paymentsTxtFileName){
         try{
             importRoomsData(roomsTxtFileName);
@@ -269,11 +290,19 @@ public class HotelImpl implements Hotel {
             importBookingsData(bookingsTxtFileName);
             importPaymentsData(paymentsTxtFileName);
         }catch(Exception e){
-            System.out.println("ERROR: an issue occured importing data")
+            System.out.println("ERROR: an issue occured importing data");
+            System.out.println(e); // Here is when we print the error
             return false;
         }
-        return true;
+        return true; // Boolean return type
     }
+
+    /**
+     * This method imports all room data
+     *
+     * @param roomsTxtFileName   The rooms txt file
+     * @return                   This method returns a boolean-type true if the data import process was successful, false if not
+     */
 
     public boolean importRoomsData(String roomsTxtFileName){
         try
@@ -287,12 +316,12 @@ public class HotelImpl implements Hotel {
             {
                 String[] room_info = st.split(",");
                 Room room = new Room();
-                room.Room(Long.valueOf(room_info[0]), room_info[1], Double.valueOf(room_info[2]), Integer.valueOf(room_info[3]), room_info[4]);
+                room.Room(Long.valueOf(room_info[0]), room_info[1], Double.valueOf(room_info[2]), Integer.valueOf(room_info[3]), room_info[4]); // We initialize the object using its own-defined constructor
                 roomList.add(room);
             }
             file.close();
         }
-        catch(Exception e)
+        catch(Exception e) // We can the error here
         {
             System.out.println("Error Occured when reading rooms data...");
             file.close();
@@ -301,6 +330,14 @@ public class HotelImpl implements Hotel {
 
         return true;
     }
+
+    /**
+     * This method imports all guests data
+     *
+     * @param guestsTxtFileName     the guests txt file
+     * @return             This method returns a boolean-type true if the guest data import process was successful, false if not
+     */
+
     public boolean importGuestsData(String guestsTxtFileName){
         try{
             File file = new File(guestsTxtFileName)
@@ -312,7 +349,7 @@ public class HotelImpl implements Hotel {
                 String[] guest_info = st.split(",");
                 if(guest_info.length > 4){
                 	VIPGuest vipGuest = new VIPGuest;
-                	vipGuest.VIPGuest(Long.valueOf(guest_info[0]), guest_info[1], guest_info[2], ft.parse(guest_info[3]), ft.parse(guest_info[4]), ft.parse(guest_info[5]));
+                	vipGuest.VIPGuest(Long.valueOf(guest_info[0]), guest_info[1], guest_info[2], ft.parse(guest_info[3]), ft.parse(guest_info[4]), ft.parse(guest_info[5])); // We use its own-defined constructor
                 	vipGuestList.add(vipGuest);
                 }else{
                 	Guest guest = new Guest();
@@ -321,7 +358,7 @@ public class HotelImpl implements Hotel {
                 }
 
             }
-        }catch(Exception e){
+        }catch(Exception e){ // We catch an error if there is ever an error
             System.out.println("Error Occured when reading Guests data...");
             file.close();
             return false;
@@ -329,6 +366,14 @@ public class HotelImpl implements Hotel {
         file.close();
         return true;
     }
+
+    /**
+     * This method imports all booking data
+     *
+     * @param bookingsTxtFileName         The bookings txt file
+     * @return                            This method returns a boolean-type true if the booking data import process was successful, false if not
+     */
+
     public boolean importBookingsData(String bookingsTxtFileName){
         try{
             File file = new File(bookingsTxtFileName);
@@ -343,18 +388,26 @@ public class HotelImpl implements Hotel {
                 booking.Booking(Long.valueOf(booking_info[0]), Long.valueOf(booking_info[1]),
                 	Long.valueOf(booking_info[2]),ft.parse(booking_info[3]),
                 	ft.parse(booking_info[4]), ft.parse(booking_info[5]),
-                	Double.valueOf(room_info[6]));
+                	Double.valueOf(room_info[6])); // This initialized the object booking calling the constructor in the class Booking
                 bookingList.add(booking);
             }
         }
-        catch(Exception e){
+        catch(Exception e){ // This catches an error, if any
             System.out.println("Error Occured when reading booking data...");
             file.close();
             return false;
         }
-        file.close();
+        file.close(); // fclose() is  a file method that closes the previously opened and created file
         return true;
     }
+
+    /**
+     * This method imports all data
+     *
+     * @param paymentsTxtFileName     the payments txt file
+     * @return             This method returns a boolean-type true if the payment data import process was successful, false if not
+     */
+
     public boolean importPaymentsData(String paymentsTxtFileName){
         try{
             File file = new File(paymentsTxtFileName);
@@ -366,29 +419,43 @@ public class HotelImpl implements Hotel {
                 String[] payment_info = st.split(",");
                 Payment payment = new Payment();
                 payment.Payment(ft.parse(payment_info[0]), Long.valueOf(payment_info[1]),
-                	Double.valueOf(payment_info[2]), payment_info[3]);
+                	Double.valueOf(payment_info[2]), payment_info[3]); // This initialized the object payment using its constructor
                 paymentList.add(payment);
             }
-        }catch(Exception e){
+        }catch(Exception e){ // Catches an error if any
             System.out.println("Error Occured when reading payment data...");
-            file.close();
+            file.close(); // This closes the file in the case there was an error
             return false;
         }
-        file.close();
+        file.close(); // This closes the file if there are no errors
         return true;
     }
 
+    /**
+     * This method checks out
+     *
+     * @param bookingID This is a long integer representing the booking ID number
+     * @return             This method returns a boolean-type true if check out was successful, false if not
+     */
 
     public boolean checkOut(long bookingID){
     	for(Booking book: bookingList){
     		if(book.getBookingID()==bookingID){booking=book;}
     	}
 
-    	if(new Date().after(booking.getCheckOutDate())|| new Date().before(checkInDate)){return false;}
+    	if(new Date().after(booking.getCheckOutDate())|| new Date().before(checkInDate)){return false;} //This makes sure the checkinDate if after the current date
 
-    	bookingList.remove(booking);
+    	bookingList.remove(booking); // Removes the element from the bookings list
     	return true;
     }
+
+    /**
+     * This method seaches guests and returns a string of the long integers of the values of their IDs
+     *
+     * @param firstName    String representing the first name of the guest
+     * @param lastName     String representing the second name of the guestthe guests txt file
+     * @return             This method seaches guests and returns a string of the long integers of the values of their IDs
+     */
 
     public int [] searchGuest(String firstName, String lastName) {
         int [] result;
@@ -398,12 +465,20 @@ public class HotelImpl implements Hotel {
             }
         }
         for(VIPGuest guest : vipGuestList) {
-            if(guest.getfName() == firstName && guest.getlName() == lastName) {
+            if(guest.getfName() == firstName && guest.getlName() == lastName) { // Conditions have to do this
                 result.add(guest.getGuestID());
             }
         }
-        return result;
+        return result; // This is an array of long integers
     }
+
+    /**
+     * This method seaches guests and returns a string of the long integers of the values of their IDs
+     *
+     * @param firstName    String representing the first name of the guest
+     * @param lastName     String representing the second name of the guestthe guests txt file
+     * @return             This method seaches guests and returns a string of the long integers of the values of their IDs
+     */
 
     public Guest searchGuestByID(long guestID) {
         for(Guest guest : guestList) {
