@@ -22,30 +22,46 @@ import java.Writer.*;
 public class HotelImpl implements Hotel {
 
     /**
-     * Imports all data from the rooms, guests, boookings and payments file.
+     * Imports all data from the rooms, guests, boookings and payments text files.
      *
      * @param roomsTxtFileName   the rooms txt file
      * @param guestsTxtFileName     the guests txt file
      * @param bookingsTxtFileName        the bookings txt file
      * @param paymentsTxtFileName     the payments txt file
-     * @return             void
+     * @return             void (This means it returns nothing)
      */
 
     public void HotelImple(String roomsTxtFileName, String guestsTxtFileName,
                            String bookingsTxtFileName, String paymentsTxtFileName){
-        importAllData(roomsTxtFileName, guestsTxtFileName, bookingsTxtFileName, paymentsTxtFileName)
+        importAllData(roomsTxtFileName, guestsTxtFileName, bookingsTxtFileName, paymentsTxtFileName) // This is where the magic happens
     }
+
+    /**
+     * Removes a room according to the toom number
+     *
+     * @param roomNumber   Integer representing the room number
+     * @return             boolean-type parameter representing true if the room was successfully removed or false if it was not
+     */
 
     public boolean removeRoom(int roomNumber) {
         for (Booking book : bookingList ) {
             Date d1 = new Date();
-            if (book.getRoomNumber() == roomNumber && d1.after(book.getCheckOutDate())) {
+            if (book.getRoomNumber() == roomNumber && d1.after(book.getCheckOutDate())) { // The if condition makes sure that the checkout date is before the current day
                 bookingList.remove(book);
                 return true;
             }
         }
         return false;
     }
+
+    /**
+     * Adds a guest, either a VIP guest in the VIP guest list or a regular guest in the hotel
+     *
+     * @param fName   String representing the first name of the guest
+     * @param lName     String representing the last name of the guest
+     * @param vipState        boolean-type parameter to indicate if the guest is VIP or not
+     * @return             true if the guest was successfully added or false if it was not
+     */
 
     public boolean addGuest(String fName, String lName, boolean vipState){
         boolean unique = true;
@@ -58,6 +74,8 @@ public class HotelImpl implements Hotel {
 			        }
 			        if(unique == true){break;}
 			    }
+
+			   	// The next 5 lines work out when the following year from the current day will be
 
 			    VIPGuest vipGuest = new VIPGuest();
 			    Calendar end_Date = Calendar.getInstance();
