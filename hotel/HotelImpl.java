@@ -473,11 +473,10 @@ public class HotelImpl implements Hotel {
     }
 
     /**
-     * This method seaches guests and returns a string of the long integers of the values of their IDs
+     * This method seaches guests by ID and returns the object with representing that guest
      *
-     * @param firstName    String representing the first name of the guest
-     * @param lastName     String representing the second name of the guestthe guests txt file
-     * @return             This method seaches guests and returns a string of the long integers of the values of their IDs
+     * @param guestID Long integer representing the guest's ID number
+     * @return             This method seaches guests and returns an object of the guest.
      */
 
     public Guest searchGuestByID(long guestID) {
@@ -486,12 +485,19 @@ public class HotelImpl implements Hotel {
                 return guest;
             }
         }
-        for(VIPGuest guest : vipGuestList) {
+        for(VIPGuest guest : vipGuestList) { // It also searches as exprected through the vipGuestList
             if(guest.getGuestID() == guestID) {
                 return guest;
             }
         }
     }
+
+    /**
+     * This method saves the data of a room
+     *
+     * @param roomsTxtFileName    String representing the rooms txt file
+     * @return                    This returns a boolean value if the room was saved
+     */
 
     public boolean saveRoomsData(String roomsTxtFileName) {
         File fnew = new File(roomsTxtFileName + ".txt");
@@ -503,55 +509,84 @@ public class HotelImpl implements Hotel {
             return true;
         }
         return false;
-        catch (IOException e) {
+        catch (IOException e) { // This catches an exception and stacks it.
             e.printStackTrace();
         }
     }
+
+    /**
+     * This method saves the data of the guests
+     *
+     * @param roomsTxtFileName    String representing the rooms txt file
+     * @return                    This returns a boolean value if the guest data was saved
+     */
 
     public boolean saveGuestsData(String guestsTxtFileName) {
         File fnew = new File(guestsTxtFileName + ".txt");
         String source = textArea.getText();
         try {
             FileWriter guestsTxtFileName = new FileWriter(fnew, false);
-            guestsTxtFileName.write(source);
-            guestsTxtFileName.close();
+            guestsTxtFileName.write(source); // This is how the file is modified to the new source data
+            guestsTxtFileName.close(); // This is how we close the file that we opened before
             return true;
         }
         return false;
-        catch (IOException e) {
+        catch (IOException e) { // This catches an expection, if any
             e.printStackTrace();
         }
     }
+
+    /**
+     * This method saves the data of the booking
+     *
+     * @param bookingsTxtFileName    String representing the bookings txt file
+     * @return                    This returns a boolean value if the booking data was saved
+     */
 
     public boolean saveBookingsData(String bookingsTxtFileName) {
         File fnew = new File(bookingsTxtFileName + ".txt");
         String source = textArea.getText();
         try {
             FileWriter bookingsTxtFileName = new FileWriter(fnew, false);
-            bookingsTxtFileName.write(source);
+            bookingsTxtFileName.write(source); // This opens and then closes in the next line the file that we created
             bookingsTxtFileName.close();
             return true;
         }
         return false;
-        catch (IOException e) {
+        catch (IOException e) { // This catches an error, if any
             e.printStackTrace();
         }
     }
+
+    /**
+     * This method saves the data of the payments
+     *
+     * @param paymentsTxtFileName    String representing the payments txt file
+     * @return                       This returns a boolean value if the payment data was saved
+     */
 
     public boolean savePaymentsData(String paymentsTxtFileName) {
         File fnew = new File(paymentsTxtFileName + ".txt");
         String source = textArea.getText();
         try {
-            FileWriter paymentsTxtFileName = new FileWriter(fnew, false);
+            FileWriter paymentsTxtFileName = new FileWriter(fnew, false); // These next 3 lines represent how we create, open, modify and close a file with new data source
             paymentsTxtFileName.write(source);
             paymentsTxtFileName.close();
             return true;
         }
         return false;
-        catch (IOException e) {
+        catch (IOException e) { // This catches an error, if any
             e.printStackTrace();
         }
     }
+
+    /**
+     * This cancels a booking, making sure of the time and date limitations mentioned in the instructions of the coursework
+     *
+     * @param bookingID    Long integer representing a booking ID
+     * @return             This returns a boolean value if the cancellation was cancelled
+     */
+
     public boolean cancelBooking(long bookingID){
     	try{
 	    	for(Booking book : bookingList){
@@ -561,25 +596,30 @@ public class HotelImpl implements Hotel {
 	    	long diff = new Date().getTime() - long diff = checkOutDate.getTime() - checkInDate.getTime();
 	        long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);;
 	        long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-	    	if(daysDiff>2){
+	    	if(daysDiff>2){ // If there is a difference of at least 2 days, all the money will be reimbursed
 	    		Payment refund = new Payment();
 	    		Payment.Payment(new Date(), booking.getGuestID(), booking.getTotalAmount()*(-1), 'refund');
 	    		paymentList.add(payment);
 	    	}
-	    	bookingList.remove(booking);
+	    	bookingList.remove(booking); // After, we remove the booking from the list, once we have verified the time constrainst
 	    	return true;
-	    }catch(Exception e){
+	    }catch(Exception e){ // This catches an error, if any
 	    	System.out.print("An error occured while canceling a booking....")
 	    	System.out.print(e + '\n')
 	    	return false;
 	    }
     }
 
-
+    /**
+     * This method displays Bookings On a Certain Date
+     *
+     * @param date    Date object representing the date that we want to look for
+     * @return        void (Nothing)
+     */
 
     public void displayBookingsOnDate(Date date){
     	for(Booking book: bookingList){
-    		if(book.getCheckOutDate().before(date) && book.getCheckInDate().after(date)){
+    		if(book.getCheckOutDate().before(date) && book.getCheckInDate().after(date)){ // These conditions check that the check out date is after the actual check in date and that everything follows the instructions on the coursework
     			Guest guest = searchGuestByID(book.getGuestID());
     			for(Room room: roomList){
     				if(room.getRoomNumber()==book.getRoomNumber()){booked_room = room;}
@@ -589,14 +629,31 @@ public class HotelImpl implements Hotel {
     		}
     	}
     }
+
+    /**
+     * This method displays Payments On a Certain Date
+     *
+     * @param date    Date object representing the date that we want to look for
+     * @return        void (Nothing)
+     */
+
     public void displayPaymentsOnDate(Date date){
-    	for(Payment payment: paymentList){
+    	for(Payment payment: paymentList){ // We iterate through the whole payment array objects
     		if(payment.getDate() == date){
     			System.out.print("Guest ID: "+ payment.getGuestID() + "Payment Ammount: " +payment.getAmount() + "Payment Reason:" + payment.getPayReason());
 
     		}
     	}
     }
+
+    /**
+     * This method displays all guests
+     *
+     * @param         None
+     * @return        void (Nothing)
+     */
+
+
     public void displayAllGuests(){
     	System.out.println('Displaying Guests: ');
     	for(Guest guest: guestList){
@@ -608,12 +665,27 @@ public class HotelImpl implements Hotel {
     	}
     }
 
+    /**
+     * This method displays all rooms
+     *
+     * @param         None
+     * @return        void (Nothing)
+     */
+
     public void displayAllRooms(){
     	System.out.println('Displaing Rooms: ');
     	for(Room room: roomList){
+    	    // The following line prints all the info about a room, after having traversed the whole array of objects that represent each and every individual room
     		System.out.print("Room Number: " +room.getRoomNumber() + "Room Type: " + room.getRoomType() + "Room Price: " + room.getRoomPrice() + "Room Capacity: " + room.getCapacity() + "Facilities: " +room.getFacilities() +'\n');
     	}
     }
+
+    /**
+     * This method displays all bookings
+     *
+     * @param         None
+     * @return        void (Nothing)
+     */
 
     public void displayAllBookings(){
     	System.out.println('Displaying Bookings: ');
@@ -625,6 +697,13 @@ public class HotelImpl implements Hotel {
     	}
     }
 
+    /**
+     * This method displays all payments
+     *
+     * @param         None
+     * @return        void (Nothing)
+     */
+
     public void displayAllPayments(){
     	System.out.println('Displaying Payments: ');
     	for(Payment payment: paymentList){
@@ -633,12 +712,23 @@ public class HotelImpl implements Hotel {
     	}
     }
 
+    /**
+     * This class is a static class named after the Room object that it represents. As taught during the lectures, all the attributes (static variables) are private, so they can only be accessed
+     * within the class itself.
+     *
+     * There is also a constructor that creates an object with all the individual parameters.
+     *
+     * In order to access all attributes on the Room object, we have developed several public methods that can ideed print all the information needed
+     */
+
     static class Room {
         private long roomNumber;
         private String roomType;
         private double roomPrice;
         private int capacity;
         private String facilities;
+
+        // This is the constructor
 
         public Room(long roomNumber, String roomType, double roomPrice, String facilities) {
             this.roomNumber = roomNumber;
@@ -647,12 +737,22 @@ public class HotelImpl implements Hotel {
             this.facilities = facilities;
         }
 
+        // These are the public methods that can access when used outside the inner, private attributes of the class
         public long getRoomNumber() {return this.roomNumber;}
         public String getRoomType(){return this.roomType;}
         public double getRoomPrice(){return this.roomPrice;}
         public int getCapacity(){return this.capacity;}
         public String getFacilities(){return this.facilities;}
     }
+
+    /**
+     * This class is a static class named after the Booking object that it represents. As taught during the lectures, all the attributes (static variables) are private, so they can only be accessed
+     * within the class itself.
+     *
+     * There is also a constructor that creates an object with all the individual parameters.
+     *
+     * In order to access all attributes on the Room object, we have developed several public methods that can ideed print all the information needed
+     */
 
     static class Booking{
         private long bookingID;
@@ -662,6 +762,8 @@ public class HotelImpl implements Hotel {
         private Date checkInDate;
         private Date checkOutDate;
         private double totalAmount;
+
+        // This is the constructor we have used to create a new object tailored to its own properties
 
         public Booking(long bookingID, long guestID, long roomNumber, Date bookingDate, Date checkInDate, Date checkOutDate, double totalAmount) {
             this.bookingID = bookingID;
@@ -673,6 +775,8 @@ public class HotelImpl implements Hotel {
             this.totalAmount = totalAmount;
         }
 
+        // These are the public methods used to access from outside the inner, private attributes of this class
+
         public long getBookingID(){return this.bookingID;}
         public long getGuestID(){return this.guestID;}
         public long getRoomNumber(){return this.roomNumber;}
@@ -682,12 +786,22 @@ public class HotelImpl implements Hotel {
         public double getTotalAmount(){return this.totalAmount;}
     }
 
+    /**
+     * This class is a static class named after the Guest object that it represents. As taught during the lectures, all the attributes (static variables) are private, so they can only be accessed
+     * within the class itself.
+     *
+     * There is also a constructor that creates an object with all the individual parameters.
+     *
+     * In order to access all attributes on the Room object, we have developed several public methods that can ideed print all the information needed
+     */
+
 	class Guest {
 	    private long guestID;
 	    private String fName;
 	    private String lName;
 	    private Date dateJoin;
 
+	    // This is the constructor used to create more objects with individual attributes that may or not differ among all Guest objects
 	    public Guest(long guestID, String fName, String lName, Date dateJoin) {
 	        this.guestID = guestID;
 	        this.fName = fName;
@@ -695,15 +809,28 @@ public class HotelImpl implements Hotel {
 	        this.dateJoin = dateJoin;
 	    }
 
+	    // These are the public methods used to access from outside the inner, private attributes of this class
+
 	    public long getGuestID() {return this.guestID;}
 	    public String getfName() {return this.fName;}
 	    public String getlName() {return this.lName;}
 	    public Date getDateJoin() {return this.dateJoin;}
 	}
 
+    /**
+     * This class is a static class named after the VIPGuest object that it represents. As taught during the lectures, all the attributes (static variables) are private, so they can only be accessed
+     * within the class itself.
+     *
+     * There is also a constructor that creates an object with all the individual parameters.
+     *
+     * In order to access all attributes on the Room object, we have developed several public methods that can ideed print all the information needed
+     */
+
     class VIPGuest extends Guest {
         private Date VIPStartDate;
         private Date VIPExpiryDate;
+
+        // This is the constructor used to create more objects with individual attributes that may or not differ among all Guest objects
 
         public VIPGuest (long guestID, String fName, String lName, Date dateJoin, Date VIPStartDate, Date VIPExpiryDate) {
             super(guestID, fName, lName, dateJoin);
@@ -716,10 +843,21 @@ public class HotelImpl implements Hotel {
             this.VIPExpiryDate = VIPExpiryDate;
         }
 
+        // These are the public methods used to access from outside the inner, private attributes of this class
+
         public Date getVIPStartDate() { return this.VIPStartDate; }
         public Date getVIPExpiryDate() { return this.VIPExpiryDate; }
 
     }
+
+    /**
+     * This class is a static class named after the Payment object that it represents. As taught during the lectures, all the attributes (static variables) are private, so they can only be accessed
+     * within the class itself.
+     *
+     * There is also a constructor that creates an object with all the individual parameters.
+     *
+     * In order to access all attributes on the Room object, we have developed several public methods that can ideed print all the information needed
+     */
 
     static class Payment {
         private Date date;
@@ -727,12 +865,16 @@ public class HotelImpl implements Hotel {
         private double amount;
         private String payReason;
 
+        // This is the constructor used to create more objects with individual attributes that may or not differ among all Guest objects
+
         public Payment(Date date, long guestID, double amount, String payReason) {
             this.date = date;
             this.guestID = guestID;
             this.amount = amount;
             this.payReason = payReason;
         }
+
+        // These are the public methods used to access from outside the inner, private attributes of this class
 
         public Date getDate() {return this.date;}
         public long getGuestID() {return this.guestID;}
