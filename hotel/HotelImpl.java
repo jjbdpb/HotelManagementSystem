@@ -24,12 +24,11 @@ public class HotelImpl implements Hotel {
     /**
      * Imports all data from the rooms, guests, boookings and payments file.
      *
-     * @param roomNumber   the room number
-     * @param roomType     the room type
-     * @param price        the room price (with no discount)
-     * @param capacity     the maximal number of people to stay
-     * @param facilities   the facilities of the room
-     * @return             true if adding the room successfully, otherwise false
+     * @param roomsTxtFileName   the rooms txt file
+     * @param guestsTxtFileName     the guests txt file
+     * @param bookingsTxtFileName        the bookings txt file
+     * @param paymentsTxtFileName     the payments txt file
+     * @return             void
      */
 
     public void HotelImple(String roomsTxtFileName, String guestsTxtFileName,
