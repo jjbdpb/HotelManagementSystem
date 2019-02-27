@@ -1,4 +1,6 @@
+// This package means we are working in the same file called hotel
 package hotel;
+// This are all the imports necessary for a few functions
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,8 +9,28 @@ import java.util.Calendar;
 import java.text.*;
 import java.Writer.*;
 
-// Means this class has to implement all the hotel's interface methods to compile successfully.
+/**
+ * The main class HotelImpl that implements the Hotel.java interface.
+ *
+ * @author Josh and Lucas Martin
+ * @version 26/02/2019
+ *
+ */
+
+
+// The public class HotelImpl has a <contract> to follow, that is, it has to declare and initialize all Hotel's methods.
 public class HotelImpl implements Hotel {
+
+    /**
+     * Imports all data from the rooms, guests, boookings and payments file.
+     *
+     * @param roomNumber   the room number
+     * @param roomType     the room type
+     * @param price        the room price (with no discount)
+     * @param capacity     the maximal number of people to stay
+     * @param facilities   the facilities of the room
+     * @return             true if adding the room successfully, otherwise false
+     */
 
     public void HotelImple(String roomsTxtFileName, String guestsTxtFileName,
                            String bookingsTxtFileName, String paymentsTxtFileName){
