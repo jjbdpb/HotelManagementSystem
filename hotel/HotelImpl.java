@@ -1,6 +1,6 @@
 // This package means we are working in the same file called hotel
 package hotel;
-// This are all the imports necessary for a few functions
+// These are all the imports necessary for a few functions
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
